@@ -1,25 +1,28 @@
-import pika
 import json
+import logging
+import pika
+from pika import DeliveryMode
+from pika.exchange_type import ExchangeType
 
-# Connect to RabbitMQ server
-connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+logging.basicConfig(level=logging.INFO)
+
+json_message = json.dumps({"file_path": "/path/to/file"})
+
+credentials = pika.PlainCredentials('guest', 'guest')
+parameters = pika.ConnectionParameters('localhost', credentials=credentials)
+connection = pika.BlockingConnection(parameters)
 channel = connection.channel()
+channel.exchange_declare(exchange="test_exchange",
+                         exchange_type=ExchangeType.direct,
+                         passive=False,
+                         durable=True,
+                         auto_delete=False)
 
-# Declare the queue
-channel.queue_declare(queue='mle_ingest')
+print("Sending message to create a queue")
+channel.basic_publish(
+    'mlexchange_exchange', 'tomo_reconstruction', json_message,
+    pika.BasicProperties(content_type='application/json',
+                         delivery_mode=DeliveryMode.Transient))
 
-# Define the message to send
-message = {
-    'key1': 'value1',
-    'key2': 'value2',
-    'key3': 'value3'
-}
 
-# Convert the message to JSON
-message_json = json.dumps(message)
-
-# Publish the message to the queue
-channel.basic_publish(exchange='', routing_key='mle_ingest', body=message_json)
-
-# Close the connection
 connection.close()
