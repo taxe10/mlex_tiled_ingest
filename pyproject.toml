@@ -19,17 +19,21 @@ classifiers = [
 ]
 
 dependencies = [
-   "pika",
-   "tiled[client]"
-
+   "pika"
 ]
-dev-dependencies = [
+
+dynamic = ["version"]
+
+
+[project.optional-dependencies]
+dev = [
     "pytest",
     "pre-commit",
     "flake8"
 ]
-
-dynamic = ["version"]
+tiled = [
+    "tiled[server]"
+]
 
 
 [tool.hatch]
