@@ -11,6 +11,7 @@ from schemas import NEW_FILE_PATH_KEY
 
 logging.basicConfig(level=logging.INFO)
 
+
 def send_message(new_file: str):
     json_message = json.dumps({NEW_FILE_PATH_KEY: new_file})
 

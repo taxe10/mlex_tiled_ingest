@@ -20,7 +20,8 @@ classifiers = [
 
 dependencies = [
    "pika",
-   "tiled[server]==0.1.0a114"
+   "tiled[server]==0.1.0a114",
+   "python-dotenv"
 ]
 
 dynamic = ["version"]

@@ -128,3 +128,5 @@ api_keys.yml
 users.yml
 
 splash_flows_globus/
+
+src/_version.py

@@ -15,7 +15,9 @@ def process_message(ch, method, properties, body):
     # Acknowledge the message
     ch.basic_ack(delivery_tag=method.delivery_tag)
     new_file_path = message.get(NEW_FILE_PATH_KEY)
-    assert new_file_path, f"Message received from rabbitMQ does not contain {NEW_FILE_PATH_KEY}"
+    assert (
+        new_file_path
+    ), f"Message received from rabbitMQ does not contain {NEW_FILE_PATH_KEY}"
     asyncio.run(process_file(new_file_path))
 
 
