@@ -1,7 +1,7 @@
 import asyncio
 import logging
-import os
 from pathlib import Path
+import sys
 
 from tiled.catalog.register import register
 from tiled.catalog import from_uri
@@ -9,24 +9,28 @@ import tiled.config
 
 logger = logging.getLogger(__name__)
 
-TILED_URL = os.getenv("TILED_URL", "http://127.0.0.1:8000")
-TILED_API_KEY = os.getenv("TILED_SINGLE_USER_API_KEY")
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 
-def register_file(path: str):
-    config = tiled.config.parse_configs("../mlex_tomo_framework/tiled/deploy/config")
-    first_tree = config['trees'][0]
-    assert first_tree['tree'] == 'catalog'
-    catalog_adapter = from_uri(
-        first_tree['args']['uri'],
-        readable_storage=first_tree['args']['readable_storage'],
-        adapters_by_mimetype=config['media_types'] or None,
+async def process_file(file_path: str, tiled_tree_path: str = "/"):
+    
+    config = tiled.config.parse_configs("/deploy/config")
+    # find the tree in configuration that matches the provided tiled_tree_path
+    matching_tree = next(
+        (tree for tree in config["trees"] if tree["path"] == tiled_tree_path), None
     )
+    assert matching_tree, f"No tiled tree configured for tree path {tiled_tree_path}"
+    assert (
+        matching_tree["tree"] == "catalog"
+    ), f"Matching tiled tree {tiled_tree_path} is not a catalog"
 
-    asyncio.run(register(
-        catalog=catalog_adapter,
-        path=Path(path)
-    ))
+    catalog_adapter = from_uri(
+        matching_tree["args"]["uri"],
+        readable_storage=matching_tree["args"]["readable_storage"],
+        adapters_by_mimetype=matching_tree["args"].get("adapters_by_mimetype"),
+    )
+    response = await register(catalog=catalog_adapter, path=Path(file_path))
+    print(response)
 
-
-register_file("./test.csv")
+asyncio.run(process_file("/tiled_storage/beamlines/8.3.2/recons/rec20240207_120550_test_no_xrays_n257/"))
+# asyncio.run(process_file("/tiled_storage/test1"))
