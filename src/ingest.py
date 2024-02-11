@@ -72,7 +72,7 @@ if __name__ == "__main__":
             process_file(
                 "../mlex_tomo_framework/data/tiled_storage/beamlines/8.3.2/recons/rec20240207_120829_test_no_xrays_n1313",
                 config_path="../mlex_tomo_framework/tiled/deploy/config",
-                path_prefix="/tiled_storage/beamlines/8.3.2/recons/"
+                path_prefix="/beamlines/8.3.2/recons/"
             )
         )
     else:
@@ -81,8 +81,9 @@ if __name__ == "__main__":
         pprint(os.environ)
         asyncio.run(
             process_file(
-                "/tiled_storage/beamlines/8.3.2/recons/rec20240207_120550_test_no_xrays_n257",
-                path_prefix="/tiled_storage/beamlines/8.3.2/recons/"
+                # "/tiled_storage/beamlines/8.3.2/recons/rec20240207_120550_test_no_xrays_n257",
+                "/tiled_storage/beamlines/8.3.2/recons/rec20240207_120829_test_no_xrays_n1313",
+                path_prefix="/beamlines/8.3.2/recons/"
             )
         )
 
