@@ -1,0 +1,7 @@
+[flake8]
+exclude =
+    .git,
+    __pycache__,
+    versioneer.py,
+    src/_version.py,
+max-line-length = 115
