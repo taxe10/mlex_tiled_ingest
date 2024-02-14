@@ -1,0 +1,2 @@
+# this is only needed by the setup-tools gh action
+# https://github.com/actions/setup-python?tab=readme-ov-file#caching-packages-dependencies
