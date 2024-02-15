@@ -11,10 +11,14 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 
+def get_tiled_config(config_path: str):
+    return tiled.config.parse_configs(config_path)
+
+
 async def process_file(
     file_path: str,
+    tiled_config: dict,
     tiled_config_tree_path: str = "/",
-    config_path: str = "/deploy/config",
     path_prefix: str = "/"
 ):
     """
@@ -36,10 +40,10 @@ async def process_file(
     Returns:
         None
     """
-    config = tiled.config.parse_configs(config_path)
+
     # find the tree in tiled configuration that matches the provided tiled_tree_path
     matching_tree = next(
-        (tree for tree in config["trees"] if tree["path"] == tiled_config_tree_path), None
+        (tree for tree in tiled_config["trees"] if tree["path"] == tiled_config_tree_path), None
     )
     assert matching_tree, f"No tiled tree configured for tree path {tiled_config_tree_path}"
     assert (
@@ -68,10 +72,11 @@ if __name__ == "__main__":
         # own settings
         import dotenv
         dotenv.load_dotenv()
+        tiled_config = get_tiled_config("../mlex_tomo_framework/tiled/deploy/config")
         asyncio.run(
             process_file(
                 "../mlex_tomo_framework/data/tiled_storage/beamlines/8.3.2/recons/rec20240207_120829_test_no_xrays_n1313",
-                config_path="../mlex_tomo_framework/tiled/deploy/config",
+                tiled_config,
                 path_prefix="/beamlines/8.3.2/recons/"
             )
         )
@@ -79,11 +84,11 @@ if __name__ == "__main__":
         from pprint import pprint
         import os
         pprint(os.environ)
+        tiled_config = get_tiled_config("/tiled_storage/beamlines/8.3.2/recons/rec20240207_120829_test_no_xrays_n1313")
         asyncio.run(
             process_file(
                 # "/tiled_storage/beamlines/8.3.2/recons/rec20240207_120550_test_no_xrays_n257",
-                "/tiled_storage/beamlines/8.3.2/recons/rec20240207_120829_test_no_xrays_n1313",
+                tiled_config,
                 path_prefix="/beamlines/8.3.2/recons/"
             )
         )
-
