@@ -5,6 +5,7 @@ import os
 
 import pika
 
+import config
 from ..ingest import get_tiled_config, process_file
 
 import tiled_ingestor.rabbitmq.schemas as schemas
@@ -12,8 +13,8 @@ import tiled_ingestor.rabbitmq.schemas as schemas
 logging.basicConfig(level=logging.CRITICAL)
 logging.getLogger('pika').setLevel(logging.CRITICAL)
 
-TILED_CONFIG_PATH = os.getenv("TILED_CONFIG_PATH")
-tiled_config = get_tiled_config(TILED_CONFIG_PATH)
+TILED_INGEST_TILED_CONFIG_PATH = os.getenv("TILED_CONFIG_PATH")
+tiled_config = get_tiled_config(TILED_INGEST_TILED_CONFIG_PATH)
 
 
 def process_message(ch, method, properties, body):
@@ -33,8 +34,9 @@ def process_message(ch, method, properties, body):
 
 def start_consumer():
     # Connect to RabbitMQ
-    credentials = pika.PlainCredentials("guest", "guest")
-    parameters = pika.ConnectionParameters("localhost", credentials=credentials)
+
+    credentials = pika.PlainCredentials(config.TILED_INGEST_RMQ_USER, config.TILED_INGEST_RMQ_PW)
+    parameters = pika.ConnectionParameters(config.TILED_INGEST_RMQ_HOST, credentials=credentials)
     connection = pika.BlockingConnection(parameters)
     channel = connection.channel()
 
