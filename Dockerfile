@@ -7,4 +7,4 @@ RUN pip install --no-cache-dir --upgrade .
 
 
 
-# CMD ["python", "main.py"]s
+CMD ["python", "-m", "tiled_ingestor.rabbitmq.consumer"]
