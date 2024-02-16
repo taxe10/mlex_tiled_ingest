@@ -3,7 +3,9 @@ import os
 
 logger = logging.getLogger(__name__)
 
-TILED_INGEST_PIKA_LOG_LEVEL = os.get_env("TILED_INGEST_PIKE_LOG_LEVEL", logging.CRITICAL)
+TILED_INGEST_PIKA_LOG_LEVEL = os.get_env(
+    "TILED_INGEST_PIKE_LOG_LEVEL", logging.CRITICAL
+)
 TILED_INGEST_RMQ_HOST = os.getenv("TILED_INGEST_RMQ_HOST")
 TILED_INGEST_RMQ_USER = os.getenv("TILED_INGEST_RMQ_USER")
 TILED_INGEST_RMQ_PW = os.getenv("TILED_INGEST_RMQ_PW")
