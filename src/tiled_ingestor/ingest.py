@@ -2,9 +2,13 @@ import asyncio
 import logging
 import sys
 
+import h5py
 from tiled.catalog.register import identity, register
 from tiled.catalog import from_uri
 import tiled.config
+from tiled.adapters.hdf5 import HDF5Adapter, SWMR_DEFAULT
+from tiled.structures.core import Spec
+from tiled.utils import path_from_uri
 
 logger = logging.getLogger(__name__)
 
@@ -13,6 +17,14 @@ logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 def get_tiled_config(config_path: str):
     return tiled.config.parse_configs(config_path)
+
+
+def diamond_tomo_h5(data_uri, swmr=SWMR_DEFAULT, libver="latest", specs=None, **kwargs):
+    specs = specs or []
+    specs.append(Spec("a_spec", "a_version"))
+    filepath = path_from_uri(data_uri)
+    file = h5py.File(filepath, "r", swmr=swmr, libver=libver)
+    return HDF5Adapter.from_file(file, specs=specs, **kwargs)
 
 
 async def process_file(
@@ -57,11 +69,11 @@ async def process_file(
         matching_tree["tree"] == "catalog"
     ), f"Matching tiled tree {tiled_config_tree_path} is not a catalog"
 
-    # using thre tree in the configuration, generate a catalog(adapter)
+    # using the tree in the configuration, generate a catalog(adapter)
     catalog_adapter = from_uri(
         matching_tree["args"]["uri"],
         readable_storage=matching_tree["args"]["readable_storage"],
-        adapters_by_mimetype=matching_tree["args"].get("adapters_by_mimetype"),
+        
     )
 
     # Register with tiled. This writes entries into the database for all of the nodes down to the data node
@@ -71,6 +83,7 @@ async def process_file(
         path=file_path,
         prefix=path_prefix,
         overwrite=False,
+        adapters_by_mimetype=matching_tree["args"].get("adapters_by_mimetype")
     )
 
 
@@ -84,9 +97,10 @@ if __name__ == "__main__":
         tiled_config = get_tiled_config("../mlex_tomo_framework/tiled/deploy/config")
         asyncio.run(
             process_file(
-                "../mlex_tomo_framework/data/tiled_storage/beamlines/8.3.2/recons/rec20240207_120829_test_no_xrays_n1313",
+                "../mlex_tomo_framework/data/tiled_storage/recons/nexus-example.nxs",
                 tiled_config,
-                path_prefix="/beamlines/8.3.2/recons/",
+                path_prefix="/recons",
+                # specs=[{"name": "ANexus", "version": "sdfsdf"}]
             )
         )
     else:
@@ -94,13 +108,11 @@ if __name__ == "__main__":
         import os
 
         pprint(os.environ)
-        tiled_config = get_tiled_config(
-            "/tiled_storage/beamlines/8.3.2/recons/rec20240207_120829_test_no_xrays_n1313"
-        )
+        tiled_config = get_tiled_config("../mlex_tomo_framework/tiled/deploy/config")
         asyncio.run(
             process_file(
-                # "/tiled_storage/beamlines/8.3.2/recons/rec20240207_120550_test_no_xrays_n257",
+                "/tiled_storage/recons/rec20240207_120550_test_no_xrays_n257",
                 tiled_config,
-                path_prefix="/beamlines/8.3.2/recons/",
+                path_prefix="/recons",
             )
         )
