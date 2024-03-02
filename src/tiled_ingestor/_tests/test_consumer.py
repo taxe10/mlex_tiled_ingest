@@ -20,10 +20,6 @@ def test_on_message(listener, monkeypatch):
     message = MagicMock()
     message.body = '{"status": "COMPLETE", "filePath": "/path/to/file"}'
 
-    def mock_process_file(file_path):
-        assert file_path == "/path/to/file"
-
-    monkeypatch.setattr(process_file, "delay", mock_process_file)
 
     listener.on_message(message)
     assert listener.messages == deque(['/path/to/file'])
