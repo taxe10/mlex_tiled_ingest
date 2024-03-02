@@ -84,7 +84,8 @@ if __name__ == "__main__":
         tiled_config = get_tiled_config("../mlex_tomo_framework/tiled/deploy/config")
         asyncio.run(
             process_file(
-                "../mlex_tomo_framework/data/tiled_storage/beamlines/8.3.2/recons/rec20240207_120829_test_no_xrays_n1313",
+                "../mlex_tomo_framework/data/tiled_storage/beamlines/8.3.2/recons/"
+                "rec20240207_120829_test_no_xrays_n1313",
                 tiled_config,
                 path_prefix="/beamlines/8.3.2/recons/",
             )

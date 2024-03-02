@@ -20,6 +20,7 @@ classifiers = [
 
 dependencies = [
    "pika",
+   "stomp.py",
    "tiled[server]==0.1.0a114",
    "python-dotenv"
 ]
@@ -30,6 +31,7 @@ dynamic = ["version"]
 [project.optional-dependencies]
 dev = [
     "pytest",
+    "pytest-asyncio",
     "pre-commit",
     "flake8"
 ]
