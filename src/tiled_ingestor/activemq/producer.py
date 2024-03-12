@@ -1,38 +1,17 @@
+import stomp
 import json
-import logging
-import os
 import sys
 
-import stomp
+conn = stomp.Connection([("k11-control", 61613)],auto_content_length=False)
+# conn.start()
+conn.connect()
+print('Connected!')
 
-from .schemas import DIAMOND_FILEPATH_KEY, DIAMOND_STATUS_KEY, STOMP_TOPIC_NAME
+# replace thhe string below with the desired filepatha
+filepath = "//dls/k11/data/2024/mg37376-1/processing/20240311120527_37086/k11-37086_processed.nxs"
+message = json.dumps({'filePath': filepath})
+destination = '/topic/org.dawnsci.file.topic'
+conn.send(destination, message, ack='auto')
 
-STOMP_LOG_LEVEL = os.getenv("STOMP_LOG_LEVEL", "INFO")
-STOMP_SERVER = os.getenv("STOMP_SERVER")
-logging.getLogger("stomp").setLevel(logging.getLevelName(STOMP_LOG_LEVEL))
-
-
-def send_message(new_file: str):
-    logging.info(f"Received request for  {new_file}")
-    json_message = json.dumps(
-        {DIAMOND_STATUS_KEY: "COMPLETE", DIAMOND_FILEPATH_KEY: new_file}
-    )
-
-    conn = stomp.Connection([(STOMP_SERVER, 61613)])
-    conn.connect(wait=True)
-
-    conn.send(
-        body=json_message,
-        destination=STOMP_TOPIC_NAME,
-        headers={"content-type": "application/json"},
-    )
-
-    conn.disconnect()
-
-
-if __name__ == "__main__":
-    if len(sys.argv) == 1:
-        new_file = "../mlex_tomo_framework/data/tiled_storage/recons/rec20240207_120829_test_no_xrays_n1313"
-    else:
-        new_file = sys.argv[1]
-    send_message(new_file=new_file)
+print('Exiting...')
+sys.exit(1)

@@ -121,11 +121,14 @@ if __name__ == "__main__":
         import os
 
         pprint(os.environ)
-        tiled_config = get_tiled_config("../mlex_tomo_framework/tiled/deploy/config")
+        config_path = os.getenv("TILED_INGEST_TILED_CONFIG_PATH")
+        tiled_config = get_tiled_config("../mlex_tomo_framework/tiled_conda/deploy/config")
         asyncio.run(
             process_file(
-                "/tiled_storage/recons/rec20240207_120550_test_no_xrays_n257",
+               # "/dls/k11/data/2024/mg37376-2/processing/mg32801-1/processed/Savu_k11-37074_full_fd_Fresnel_rmrings_vo_AST_tiff/TiffSaver_5",
+               # "/dls/tmp/mlex/mlex_tomo_framework/data/tiled_storage/recons/rec20240207_120550_test_no_xrays_n257",
+                "/dls/k11/data/2024/mg37376-1/processed/Savu_k11-38639_3x_fd_vo_AST_tiff/TiffSaver_3",
                 tiled_config,
-                path_prefix="/recons",
+                path_prefix="reconstructions",
             )
         )

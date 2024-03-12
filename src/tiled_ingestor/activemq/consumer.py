@@ -1,6 +1,7 @@
 import asyncio
 from collections import deque
 import json
+from pathlib import Path
 from time import sleep
 import os
 
@@ -12,10 +13,16 @@ import logging
 
 TILED_INGEST_TILED_CONFIG_PATH = os.getenv("TILED_INGEST_TILED_CONFIG_PATH")
 STOMP_SERVER = os.getenv("STOMP_SERVER")
-
 STOMP_LOG_LEVEL = os.getenv("STOMP_LOG_LEVEL", "INFO")
+
 logging.getLogger("stomp").setLevel(logging.getLevelName(STOMP_LOG_LEVEL))
 logging.getLogger("asyncio").setLevel(logging.INFO)
+logging.getLogger("aiosqlite").setLevel(logging.INFO)
+
+logger = logging.getLogger("activemq_consumer")
+logger.info(f"TILED_INGEST_TILED_CONFIG_PATH: {TILED_INGEST_TILED_CONFIG_PATH} ")
+logger.info(f"STOMPSERVER: {STOMP_SERVER} ")
+logger.info(f"STOMP_TOPIC_NAME: {STOMP_TOPIC_NAME} ")
 
 
 class ScanListener(stomp.ConnectionListener):
@@ -31,8 +38,10 @@ class ScanListener(stomp.ConnectionListener):
         # separate parameters. But in the version I'm using, the message
         # is an object that contains body and headers
         ob = json.loads(message.body)
+        logger.info(f"Received message: {ob['status']}")
         # if (ob["status"] == "STARTED"):
         if ob[DIAMOND_STATUS_KEY] == "COMPLETE":
+            print(ob)
             self.messages.append(ob[DIAMOND_FILEPATH_KEY])
 
 
@@ -47,7 +56,11 @@ def start_consumer():
         if scan_listener.messages:
             new_file_path = scan_listener.messages.popleft()
             try:
-                asyncio.run(process_file(new_file_path, tiled_config))
+                logger.info(f"Ingesting file: {new_file_path}")
+                # we get a path to the nexus file, but we want the TiffSaver_3 file next to it
+                nxs_path = Path(new_file_path)
+                tiff_path = nxs_path.parent / Path("TiffSaver_3")
+                asyncio.run(process_file(str(tiff_path), tiled_config, path_prefix="reconstructions"))
             except Exception as e:
                 print("Failed to process file " + new_file_path)
                 print(str(e))
