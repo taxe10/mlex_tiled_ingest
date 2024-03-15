@@ -53,11 +53,16 @@ def start_consumer():
         if scan_listener.messages:
             new_file_path = scan_listener.messages.popleft()
             try:
+                logger.info("Received File")
                 logger.info(f"Ingesting file: {new_file_path}")
-                # we get a path to the nexus file, but we want the TiffSaver_3 file next to it
+                # we get a path to the nexus file, but we want the TiffSaver file next to it
                 nxs_path = Path(new_file_path)
-                tiff_path = nxs_path.parent / Path("TiffSaver_3")
-                asyncio.run(process_file(str(tiff_path), tiled_config, path_prefix="reconstructions"))
+                # Tiffs are in a folder whose name starts with `TiffSaver_` and has an integer appended
+                tiff_saver_candidates = list(nxs_path.parent.glob("TiffSaver*"))
+                if len(tiff_saver_candidates) > 0:
+                    asyncio.run(process_file(str(tiff_saver_candidates[0]), tiled_config, path_prefix="reconstructions"))
+                else:
+                    logger.warning(f"Cannot find Tiffs for nexus file {new_file_path}")
             except Exception as e:
                 print("Failed to process file " + new_file_path)
                 print(str(e))
