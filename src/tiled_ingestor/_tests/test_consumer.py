@@ -1,6 +1,7 @@
-import pytest
-from unittest.mock import MagicMock
 from collections import deque
+from unittest.mock import MagicMock
+
+import pytest
 
 from tiled_ingestor.activemq.consumer import ScanListener
 
@@ -20,7 +21,5 @@ def test_on_message(listener, monkeypatch):
     message = MagicMock()
     message.body = '{"status": "COMPLETE", "filePath": "/path/to/file"}'
 
-
     listener.on_message(message)
-    assert listener.messages == deque(['/path/to/file'])
-
+    assert listener.messages == deque(["/path/to/file"])

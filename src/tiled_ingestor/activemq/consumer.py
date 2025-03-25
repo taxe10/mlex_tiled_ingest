@@ -1,15 +1,14 @@
 import asyncio
-from collections import deque
 import json
+import logging
+import os
+from collections import deque
 from pathlib import Path
 from time import sleep
-import os
 
 import stomp
 
-from .schemas import DIAMOND_FILEPATH_KEY, DIAMOND_STATUS_KEY
 from ..ingest import get_tiled_config, process_file
-import logging
 
 TILED_INGEST_TILED_CONFIG_PATH = os.getenv("TILED_INGEST_TILED_CONFIG_PATH")
 STOMP_SERVER = os.getenv("STOMP_SERVER")
@@ -40,7 +39,8 @@ class ScanListener(stomp.ConnectionListener):
         # is an object that contains body and headers
         ob = json.loads(message.body)
         logger.info(f"Received message: {ob}")
-        self.messages.append(ob['filePath'])
+        self.messages.append(ob["filePath"])
+
 
 def start_consumer():
     tiled_config = get_tiled_config(TILED_INGEST_TILED_CONFIG_PATH)
@@ -60,7 +60,13 @@ def start_consumer():
                 # Tiffs are in a folder whose name starts with `TiffSaver_` and has an integer appended
                 tiff_saver_candidates = list(nxs_path.parent.glob("TiffSaver*"))
                 if len(tiff_saver_candidates) > 0:
-                    asyncio.run(process_file(str(tiff_saver_candidates[0]), tiled_config, path_prefix="reconstructions"))
+                    asyncio.run(
+                        process_file(
+                            str(tiff_saver_candidates[0]),
+                            tiled_config,
+                            path_prefix="reconstructions",
+                        )
+                    )
                 else:
                     logger.warning(f"Cannot find Tiffs for nexus file {new_file_path}")
             except Exception as e:

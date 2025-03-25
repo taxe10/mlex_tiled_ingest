@@ -4,12 +4,13 @@ import os
 import sys
 
 import pika
+
+# import config
+import schemas
 from pika import DeliveryMode
 
 # from pika.exchange_type import ExchangeType
 
-# import config
-import schemas
 
 TILED_INGEST_PIKA_LOG_LEVEL = os.getenv("TILED_INGEST_PIKE_LOG_LEVEL", logging.CRITICAL)
 logging.basicConfig(level=logging.DEBUG)

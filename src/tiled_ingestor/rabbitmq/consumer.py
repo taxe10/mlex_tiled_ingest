@@ -1,14 +1,14 @@
 import asyncio
-import logging
 import json
+import logging
 import os
 
 import pika
 
+import tiled_ingestor.rabbitmq.schemas as schemas
+
 # import config
 from ..ingest import get_tiled_config, process_file
-
-import tiled_ingestor.rabbitmq.schemas as schemas
 
 TILED_INGEST_PIKA_LOG_LEVEL = os.getenv("TILED_INGEST_PIKE_LOG_LEVEL", logging.CRITICAL)
 logging.basicConfig(level=logging.CRITICAL)

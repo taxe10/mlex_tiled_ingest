@@ -3,10 +3,10 @@ import logging
 import sys
 
 import h5py
-from tiled.catalog.register import identity, register
-from tiled.catalog import from_uri
 import tiled.config
-from tiled.adapters.hdf5 import HDF5Adapter, SWMR_DEFAULT
+from tiled.adapters.hdf5 import SWMR_DEFAULT, HDF5Adapter
+from tiled.catalog import from_uri
+from tiled.catalog.register import identity, register
 from tiled.structures.core import Spec
 from tiled.utils import path_from_uri
 
@@ -117,17 +117,19 @@ if __name__ == "__main__":
             )
         )
     else:
-        from pprint import pprint
         import os
+        from pprint import pprint
 
         pprint(os.environ)
         config_path = os.getenv("TILED_INGEST_TILED_CONFIG_PATH")
-        tiled_config = get_tiled_config("../mlex_tomo_framework/tiled_conda/deploy/config")
+        tiled_config = get_tiled_config(
+            "../mlex_tomo_framework/tiled_conda/deploy/config"
+        )
         asyncio.run(
             process_file(
-               # "/dls/k11/data/2024/mg37376-2/processing/mg32801-1/processed/Savu_k11-37074_full_fd_Fresnel_rmrings_vo_AST_tiff/TiffSaver_5",
-               # "/dls/tmp/mlex/mlex_tomo_framework/data/tiled_storage/recons/rec20240207_120550_test_no_xrays_n257",
-               # "/dls/k11/data/2024/mg37376-1/processed/Savu_k11-38639_3x_fd_vo_AST_tiff/TiffSaver_3",
+                # "/dls/k11/data/2024/mg37376-2/processing/mg32801-1/processed/Savu_k11-37074_full_fd_Fresnel_rmrings_vo_AST_tiff/TiffSaver_5",
+                # "/dls/tmp/mlex/mlex_tomo_framework/data/tiled_storage/recons/rec20240207_120550_test_no_xrays_n257",
+                # "/dls/k11/data/2024/mg37376-1/processed/Savu_k11-38639_3x_fd_vo_AST_tiff/TiffSaver_3",
                 "/dls/k11/data/2024/mg37376-1/processing/i23_data/tiff",
                 tiled_config,
                 path_prefix="reconstructions",
