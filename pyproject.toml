@@ -21,7 +21,6 @@ classifiers = [
 dependencies = [
    "pika",
    "stomp.py",
-   "tiled[server]==0.1.0a114",
    "python-dotenv"
 ]
 
@@ -34,6 +33,14 @@ dev = [
     "pytest-asyncio",
     "pre-commit",
     "flake8"
+]
+
+file_watcher = [
+    "pandas",
+    "python-dotenv==1.0.0",
+    "h5py==3.9.0",
+    "fabio==2023.6.0",
+    "tiled[all]==0.1.0a116",
 ]
 
 [tool.hatch]
